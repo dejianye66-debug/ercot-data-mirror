@@ -8,7 +8,10 @@ on:
       - ".github/workflows/ercot-mirror.yml"
       - "scripts/fetch_ercot.py"
   schedule:
-    - cron: "27 15 * * *"
+    # 08:30 US Central in daylight time and standard time, respectively.
+    # The second run is inexpensive when the ERCOT DocID is unchanged.
+    - cron: "30 13 * * *"
+    - cron: "30 14 * * *"
   workflow_dispatch:
     inputs:
       force:
