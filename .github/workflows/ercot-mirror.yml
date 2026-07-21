@@ -1,0 +1,94 @@
+name: Mirror ERCOT RTM archive
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ercot-mirror.yml"
+      - "scripts/fetch_ercot.py"
+  schedule:
+    - cron: "27 15 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Download and replace the release asset even if DocID is unchanged
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ercot-rtm-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Repair state when the release is missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view ercot-latest >/dev/null 2>&1; then
+            rm -f status/latest.json
+          fi
+
+      - name: Check ERCOT and download when changed
+        id: fetch
+        shell: bash
+        run: |
+          force_arg=""
+          if [ "${{ inputs.force }}" = "true" ]; then
+            force_arg="--force"
+          fi
+          python scripts/fetch_ercot.py \
+            --output-dir mirror-output \
+            --previous status/latest.json \
+            $force_arg
+          echo "changed=$(tr -d '\r\n' < mirror-output/changed.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update stable release assets
+        if: steps.fetch.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view ercot-latest >/dev/null 2>&1; then
+            gh release upload ercot-latest \
+              mirror-output/ercot-latest.zip \
+              mirror-output/latest.json \
+              --clobber
+          else
+            gh release create ercot-latest \
+              mirror-output/ercot-latest.zip \
+              mirror-output/latest.json \
+              --title "ERCOT RTM latest mirror" \
+              --notes "Automated mirror of public ERCOT report type 13061 for the M3 workbook updater."
+          fi
+
+      - name: Commit small metadata heartbeat
+        if: steps.fetch.outputs.changed == 'true'
+        shell: bash
+        run: |
+          mkdir -p status
+          cp mirror-output/latest.json status/latest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status/latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update ERCOT mirror metadata"
+            git push
+          fi
