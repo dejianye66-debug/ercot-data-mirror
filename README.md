@@ -1,6 +1,6 @@
 # ERCOT RTM data mirror for the M3 workbook
 
-This repository checks ERCOT public report type `13061` once per day from a standard GitHub-hosted runner. When ERCOT publishes a new annual archive, the workflow validates the ZIP and replaces two stable assets in the `ercot-latest` release:
+This repository checks ERCOT public report type `13061` from a standard GitHub-hosted runner. It runs at 13:30 UTC and 14:30 UTC so that one check occurs at about 08:30 US Central across daylight-saving changes. When ERCOT publishes a new annual archive, the workflow validates the ZIP and replaces two stable assets in the `ercot-latest` release:
 
 - `ercot-latest.zip`
 - `latest.json`
@@ -9,7 +9,7 @@ The Windows M3 updater reads these assets only when direct access to ERCOT is un
 
 ## Manual first run
 
-Open **Actions → Mirror ERCOT RTM archive → Run workflow**. A successful run creates the `ercot-latest` release. After that, the scheduled workflow checks once per day.
+Open **Actions → Mirror ERCOT RTM archive → Run workflow**. A successful run creates the `ercot-latest` release. After that, scheduled checks run automatically. When the ERCOT DocID is unchanged, the second check does not redownload or republish the archive.
 
 ## Official source
 
