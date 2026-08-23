@@ -1,13 +1,13 @@
 {
-  "DocID": "1262953801",
-  "ConstructedName": "rpt.00013061.0000000000000000.20260816.080638631.RTMLZHBSPP_2026.zip",
+  "DocID": "1265688516",
+  "ConstructedName": "rpt.00013061.0000000000000000.20260823.080655125.RTMLZHBSPP_2026.zip",
   "FriendlyName": "RTMLZHBSPP_2026",
-  "PublishDate": "2026-08-16T08:06:36-05:00",
-  "ContentSize": 8596635,
+  "PublishDate": "2026-08-23T08:06:53-05:00",
+  "ContentSize": 8834879,
   "SourceYear": 2026,
-  "Sha256": "306302fc528171b639675e646ef91a5941a44cda79c85cda060dbf817a8802ef",
+  "Sha256": "0d6bb7a36b75ae571e3b70dfe3dd424627be6372b35ec8dc7472ec773b513d8d",
   "AssetName": "ercot-latest.zip",
-  "MirroredAt": "2026-08-16T14:02:17.045344+00:00",
+  "MirroredAt": "2026-08-23T13:50:59.521996+00:00",
   "SourceReportTypeId": 13061,
   "SourceUrl": "https://www.ercot.com/misapp/servlets/IceDocListJsonWS?reportTypeId=13061"
 }
